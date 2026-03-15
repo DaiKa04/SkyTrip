@@ -7,6 +7,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Kiểm tra giá trị biến môi trường (sẽ in ra log khi chạy)
+console.log('MONGODB_URI from env:', process.env.MONGODB_URI);
+
 // Kết nối MongoDB
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ MongoDB connected'))
