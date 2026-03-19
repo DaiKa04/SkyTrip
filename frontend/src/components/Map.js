@@ -1,4 +1,3 @@
-// Map.js
 export default function Map() {
-  return <div>Bản đồ</div>;
+  return <div>Bản đồ sẽ được hiển thị ở đây</div>;
 }
