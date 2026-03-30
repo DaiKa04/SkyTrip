@@ -13,8 +13,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
   useEffect(() => {
     checkAuth();
   }, []);
@@ -26,7 +24,7 @@ export const AuthProvider = ({ children }) => {
       return;
     }
     try {
-      const res = await axios.get(`${API_URL}/api/auth/me`, {
+      const res = await axios.get(`/api/auth/me`, { // ✅ dùng proxy
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(res.data);
@@ -39,7 +37,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post(`${API_URL}/api/auth/login`, { email, password });
+      const res = await axios.post(`/api/auth/login`, { email, password }); // ✅ proxy
       const { token, user } = res.data;
       localStorage.setItem('token', token);
       setUser(user);
@@ -50,16 +48,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
-    try {
-      const res = await axios.post(`${API_URL}/api/auth/register`, userData);
-      const { token, user } = res.data;
-      localStorage.setItem('token', token);
-      setUser(user);
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: error.response?.data?.message || 'Registration failed' };
-    }
-  };
+  try {
+    const res = await axios.post(`/api/auth/register`, userData);
+    // Không lưu token, không set user
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.response?.data?.message || 'Registration failed' };
+  }
+};
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -70,7 +66,7 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (data) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.put(`${API_URL}/api/auth/me`, data, {
+      const res = await axios.put(`/api/auth/me`, data, { // ✅ proxy
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(res.data);
@@ -83,9 +79,9 @@ export const AuthProvider = ({ children }) => {
   const changePassword = async (currentPassword, newPassword) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`${API_URL}/api/auth/change-password`,
+      await axios.put(`/api/auth/change-password`,
         { currentPassword, newPassword },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } } // ✅ proxy
       );
       return { success: true };
     } catch (error) {

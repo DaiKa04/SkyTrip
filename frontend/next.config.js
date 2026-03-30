@@ -7,8 +7,15 @@ const nextConfig = {
         hostname: 'res.cloudinary.com',
         pathname: '/**',
       },
-      // thêm các hostname khác nếu cần
     ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:5000/api/:path*', // Proxy đến backend
+      },
+    ];
   },
 };
 

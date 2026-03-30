@@ -15,16 +15,16 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    try {
-      await register(name, email, password);
-      router.push("/");
-    } catch (err) {
-      setError(err.response?.data?.message || "Đăng ký thất bại");
-    }
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  const result = await register({ name, email, password });
+  if (result.success) {
+    router.push("/login"); // chuyển đến trang đăng nhập
+  } else {
+    setError(result.error);
+  }
+};
 
   const pageStyle = {
     minHeight: "100vh",

@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Home as HomeIcon, MapPin, Map, Info, LogIn, UserPlus, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { Home as HomeIcon, MapPin, Map, Info, LogIn, UserPlus, ChevronLeft, ChevronRight, Play, User } from 'lucide-react';
 
 export default function Home() {
+  const { user, logout } = useAuth(); // Lấy user và logout từ AuthContext
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const images = [
     '/image/03.jpg',
@@ -70,6 +73,7 @@ export default function Home() {
     textDecoration: 'none',
   };
 
+  // Style cho nút đăng nhập (khi chưa đăng nhập)
   const loginBtnStyle = {
     display: 'inline-flex',
     alignItems: 'center',
@@ -100,6 +104,32 @@ export default function Home() {
     fontSize: '1rem',
     transition: 'all 0.2s',
     textDecoration: 'none',
+  };
+
+  // Style cho tên user và nút đăng xuất
+  const userInfoStyle = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 12px',
+    color: '#000000',
+    whiteSpace: 'nowrap',
+    fontSize: '1rem',
+  };
+
+  const logoutBtnStyle = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 12px',
+    background: '#f97316',
+    border: 'none',
+    borderRadius: '8px',
+    color: '#ffffff',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+    fontSize: '1rem',
+    transition: 'all 0.2s',
   };
 
   const logoStyle = {
@@ -310,13 +340,13 @@ export default function Home() {
   };
 
   const offers = [
-    { image: '/image/08.jpg' },
-    { image: '/image/09.jpg' },
-    { image: '/image/10.jpg' },
-    { image: '/image/11.jpg' },
+    { image: '/image/08.jpg', title: 'Ưu đãi đặc biệt', desc: 'Giảm 30% cho đặt phòng đầu tiên' },
+    { image: '/image/09.jpg', title: 'Tour hè 2025', desc: 'Combo tiết kiệm lên đến 1.000.000đ' },
+    { image: '/image/10.jpg', title: 'Vé máy bay giá rẻ', desc: 'Bay khắp Đông Nam Á chỉ từ 99k' },
+    { image: '/image/11.jpg', title: 'Khám phá văn hóa', desc: 'Trải nghiệm bản địa độc đáo' },
   ];
 
-  // Phần mới: Bạn muốn đi đâu chơi? (6 card video)
+  // Phần Bạn muốn đi đâu chơi?
   const sectionStyle = {
     maxWidth: '1280px',
     margin: '0 auto',
@@ -344,17 +374,17 @@ export default function Home() {
     fontWeight: '500',
   };
 
-   const videoGridStyle = {
+  const videoGridStyle = {
     display: 'flex',
     overflowX: 'auto',
     gap: '20px',
-    paddingBottom: '8px',   // tránh scrollbar che mất nội dung
+    paddingBottom: '8px',
     scrollbarWidth: 'thin',
   };
 
-    const videoCardStyle = {
+  const videoCardStyle = {
     flex: '0 0 auto',
-    width: '320px',          // độ dài của card
+    width: '320px',
     backgroundColor: 'white',
     borderRadius: '12px',
     overflow: 'hidden',
@@ -363,15 +393,15 @@ export default function Home() {
     cursor: 'pointer',
   };
 
- const videoThumbStyle = {
+  const videoThumbStyle = {
     position: 'relative',
     width: '100%',
-    height: '200px',         // chiều cao card
+    height: '200px',
     backgroundColor: '#e5e7eb',
     overflow: 'hidden',
   };
 
-   const videoImageStyle = {
+  const videoImageStyle = {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
@@ -390,24 +420,7 @@ export default function Home() {
     justifyContent: 'center',
   };
 
-  const videoContentStyle = {
-    padding: '12px',
-  };
-
-  const videoTitleStyle = {
-    fontSize: '1rem',
-    fontWeight: '600',
-    marginBottom: '4px',
-    color: '#1f2937',
-  };
-
-  const videoDescStyle = {
-    fontSize: '0.8rem',
-    color: '#6b7280',
-  };
-
-  // Dữ liệu video (bạn thay ảnh thực tế)
-   const videos = [
+  const videos = [
     { image: '/image/video1.jpg' },
     { image: '/image/video2.jpg' },
     { image: '/image/video3.jpg' },
@@ -422,22 +435,42 @@ export default function Home() {
         <div style={innerStyle}>
           <div style={logoStyle}>SkyTrip</div>
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'nowrap' }}>
-            <button style={buttonMenuStyle}><HomeIcon size={18} /> Trang chủ</button>
-            <button style={buttonMenuStyle}><MapPin size={18} /> Địa điểm</button>
-            <button style={buttonMenuStyle}><Map size={18} /> Bản đồ</button>
-            <button style={buttonMenuStyle}><Info size={18} /> Giới thiệu</button>
-            <Link href="/login" style={loginBtnStyle}><LogIn size={18} /> Đăng nhập</Link>
-            <Link href="/register" style={registerBtnStyle}><UserPlus size={18} /> Đăng ký</Link>
+  <Link href="/" style={buttonMenuStyle}><HomeIcon size={18} /> Trang chủ</Link>
+  <Link href="/places" style={buttonMenuStyle}><MapPin size={18} /> Địa điểm</Link>
+  <Link href="/map" style={buttonMenuStyle}><Map size={18} /> Bản đồ</Link>
+  <Link href="/about" style={buttonMenuStyle}><Info size={18} /> Giới thiệu</Link>
+            {/* Phần Auth: hiển thị user nếu đã đăng nhập */}
+            {user ? (
+              <>
+                <div style={userInfoStyle}>
+                  <User size={18} /> {user.name || user.email}
+                </div>
+                <button onClick={logout} style={logoutBtnStyle}>
+                  Đăng xuất
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" style={loginBtnStyle}><LogIn size={18} /> Đăng nhập</Link>
+                <Link href="/register" style={registerBtnStyle}><UserPlus size={18} /> Đăng ký</Link>
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Khung trắng 4 mục */}
+           {/* Khung trắng 4 mục */}
       <div style={{ backgroundColor: 'white', boxShadow: '0 1px 3px 0 rgba(0,0,0,0.05)', borderBottom: '1px solid #eef2f6' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '12px 24px' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'flex-start' }}>
             {categories.map((cat) => (
-              <button key={cat} style={categoryButtonStyle}>{cat}</button>
+              <Link
+                key={cat}
+                href={`/places?category=${encodeURIComponent(cat)}`}
+                style={categoryButtonStyle}
+              >
+                {cat}
+              </Link>
             ))}
           </div>
         </div>
@@ -487,8 +520,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Phần mới: Bạn muốn đi đâu chơi? */}
-            {/* Phần mới: Bạn muốn đi đâu chơi? */}
+      {/* Phần Bạn muốn đi đâu chơi? */}
       <div style={sectionStyle}>
         <div style={sectionHeaderStyle}>
           <h2 style={sectionTitleStyle}>Bạn muốn đi đâu chơi?</h2>

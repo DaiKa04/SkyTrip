@@ -1,7 +1,5 @@
 // frontend/src/lib/api.js
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
 // Helper: lấy token từ localStorage
 const getToken = () => {
   if (typeof window !== 'undefined') {
@@ -18,7 +16,7 @@ const authHeader = () => {
 
 // ==================== AUTH ====================
 export async function register(userData) {
-  const res = await fetch(`${API_URL}/api/auth/register`, {
+  const res = await fetch(`/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData)
@@ -29,7 +27,7 @@ export async function register(userData) {
 }
 
 export async function login(credentials) {
-  const res = await fetch(`${API_URL}/api/auth/login`, {
+  const res = await fetch(`/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(credentials)
@@ -40,7 +38,7 @@ export async function login(credentials) {
 }
 
 export async function getCurrentUser() {
-  const res = await fetch(`${API_URL}/api/auth/me`, {
+  const res = await fetch(`/api/auth/me`, {
     headers: {
       'Content-Type': 'application/json',
       ...authHeader()
@@ -52,7 +50,7 @@ export async function getCurrentUser() {
 }
 
 export async function updateProfile(userData) {
-  const res = await fetch(`${API_URL}/api/auth/me`, {
+  const res = await fetch(`/api/auth/me`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -66,7 +64,7 @@ export async function updateProfile(userData) {
 }
 
 export async function changePassword(passwordData) {
-  const res = await fetch(`${API_URL}/api/auth/change-password`, {
+  const res = await fetch(`/api/auth/change-password`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -81,7 +79,7 @@ export async function changePassword(passwordData) {
 
 // ==================== ADMIN ====================
 export async function getAllUsers() {
-  const res = await fetch(`${API_URL}/api/admin/users`, {
+  const res = await fetch(`/api/admin/users`, {
     headers: {
       'Content-Type': 'application/json',
       ...authHeader()
@@ -93,7 +91,7 @@ export async function getAllUsers() {
 }
 
 export async function updateUserRole(userId, role) {
-  const res = await fetch(`${API_URL}/api/admin/users/${userId}/role`, {
+  const res = await fetch(`/api/admin/users/${userId}/role`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -107,7 +105,7 @@ export async function updateUserRole(userId, role) {
 }
 
 export async function toggleUserActive(userId) {
-  const res = await fetch(`${API_URL}/api/admin/users/${userId}/toggle-active`, {
+  const res = await fetch(`/api/admin/users/${userId}/toggle-active`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -119,15 +117,15 @@ export async function toggleUserActive(userId) {
   return data; // { user }
 }
 
-// ==================== PLACES (tạm thời) ====================
+// ==================== PLACES ====================
 export async function getPlaces() {
-  const res = await fetch(`${API_URL}/api/places`);
+  const res = await fetch(`/api/places`);
   if (!res.ok) throw new Error('Failed to fetch places');
   return res.json();
 }
 
 export async function getPlaceById(id) {
-  const res = await fetch(`${API_URL}/api/places/${id}`);
+  const res = await fetch(`/api/places/${id}`);
   if (!res.ok) throw new Error('Failed to fetch place');
   return res.json();
 }
@@ -135,7 +133,7 @@ export async function getPlaceById(id) {
 export const addFavorite = async (placeId) => {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('Not authenticated');
-  const res = await fetch(`${API_URL}/api/favorites`, {
+  const res = await fetch(`/api/favorites`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -150,7 +148,7 @@ export const addFavorite = async (placeId) => {
 export const removeFavorite = async (placeId) => {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('Not authenticated');
-  const res = await fetch(`${API_URL}/api/favorites/${placeId}`, {
+  const res = await fetch(`/api/favorites/${placeId}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`
@@ -159,10 +157,11 @@ export const removeFavorite = async (placeId) => {
   if (!res.ok) throw new Error('Failed to remove favorite');
   return res.json();
 };
-// ==================== REVIEWS (tạm thời) ====================
+
+// ==================== REVIEWS ====================
 export async function getRecentReviews(limit = 3) {
   try {
-    const res = await fetch(`${API_URL}/api/reviews/recent?limit=${limit}`);
+    const res = await fetch(`/api/reviews/recent?limit=${limit}`);
     if (!res.ok) {
       console.warn('API /reviews/recent chưa sẵn sàng, trả về mảng rỗng');
       return [];
